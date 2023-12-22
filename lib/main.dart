@@ -3,106 +3,86 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  var a = 1;
+  var name= ['유진서','강승찬','청룡이'];
+  List likes = [0, 0, 0];
+  void _incrementLike(int index) {
+    setState(() {
+      likes[index]++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text('금호동3가',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 17,
-                ),
-              ),
-              Icon(Icons.keyboard_arrow_down),
-            ],
-          ),
-          actions: <Widget>[
-            Icon(Icons.search),
-            SizedBox(width: 25),
-            Icon(Icons.menu),
-            SizedBox(width: 25),
-            Icon(Icons.notifications),
-            SizedBox(width: 20),
-          ],
+        floatingActionButton: FloatingActionButton(
+          child: Text(a.toString()),
+          onPressed:(){
+            setState(() {
+              a++;
+            });
+          },
         ),
-        body: Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey,
-              width: 1.0,
-            ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(5),
-                child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/dog.png'),
-                        fit: BoxFit.cover,
-                      ),
-                      border: Border.all(
-                        color: Colors.black12,
-                        width: 1.0,
-                      )
-                    ),
+        appBar: AppBar(title: Text('연락처앱'),),
+        //스크롤바 생김, 스크롤 위치 감시도 가능함, 메모리 절약이 가능!
+        body: ListView.builder(
+            itemCount: name.length,
+            itemBuilder: (context, i){
+              return ListTile(
+                leading: Image.asset(('assets/profile.png')),
+                title: Text(name[i]),
+                trailing: Row(
+                   mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${likes[i]}'), // 좋아요 수 표시
+                      IconButton(
+                        icon: Icon(Icons.thumb_up),
+                        onPressed: () => _incrementLike(i),
+                      ),// 좋아요 버튼
+                  ],
                 ),
-              ),
-              Expanded(
-                  child:
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Container(
-                      height: 120,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text('캐논 DSLR 100D (단렌즈, 충전기 16기가 SD 포함',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          Text('성동구 행당동 . 끌올 10분전 ',
-                            style: TextStyle(color: Colors.blueGrey, fontSize: 10),
-                          ),
-                          Text('210,000원',
-                            style: TextStyle(fontWeight:FontWeight.w900),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(Icons.favorite_border), // 첫 번째 아이콘
-                              SizedBox(width: 3), // 아이콘 사이 간격
-                              Text('4'),
-                              SizedBox(width: 10),// 두 번째 아이콘
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-              )
-            ],
-          ),
-
-
-
+              );
+            },
         ),
+        bottomNavigationBar: BottomAppBar(),
+      ),
+    );
+
+  }
+}
+//stless 로 커스텀위젯을 만들 수 있다!
+class BottomAppBar extends StatelessWidget {
+  const BottomAppBar({super.key});
+//변수에 담아도 되는 것 -> 평생 안바뀌는거 상단바, 하단바 같은것들 데이터가 바뀐다면 class 커스텀위젯으로 써라
+  @override //내꺼먼저 적용해줘(덮어쓰라는 이야기)
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        border: Border.all(width: 0.5)
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(Icons.phone),
+          Icon(Icons.message),
+          Icon(Icons.info),
+        ],
       ),
     );
   }
 }
+
