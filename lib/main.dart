@@ -3,7 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+      MaterialApp(
+          home: MyApp()
+      )
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -14,52 +18,40 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var a = 1;
-  var name= ['유진서','강승찬','청룡이'];
-  List likes = [0, 0, 0];
-  void _incrementLike(int index) {
-    setState(() {
-      likes[index]++;
-    });
-  }
+  var name = ['유진서', '강승찬', '청룡이'];
+  String inputText = ''; // 사용자 입력을 저장할 변수
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          child: Text(a.toString()),
-          onPressed:(){
-            setState(() {
-              a++;
-            });
-          },
-        ),
-        appBar: AppBar(title: Text('연락처앱'),),
-        //스크롤바 생김, 스크롤 위치 감시도 가능함, 메모리 절약이 가능!
-        body: ListView.builder(
-            itemCount: name.length,
-            itemBuilder: (context, i){
-              return ListTile(
-                leading: Image.asset(('assets/profile.png')),
-                title: Text(name[i]),
-                trailing: Row(
-                   mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${likes[i]}'), // 좋아요 수 표시
-                      IconButton(
-                        icon: Icon(Icons.thumb_up),
-                        onPressed: () => _incrementLike(i),
-                      ),// 좋아요 버튼
-                  ],
-                ),
+  build(context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return DialogUI(
+                onSubmitted: (inputText) {
+                  setState(() {
+                    name.add(inputText);
+                  });
+                },
               );
             },
-        ),
-        bottomNavigationBar: BottomAppBar(),
+          );
+        },
       ),
+      appBar: AppBar(title: Text('연락처앱')),
+      body: ListView.builder(
+        itemCount: name.length,
+        itemBuilder: (context, i) {
+          return ListTile(
+            leading: Image.asset('assets/profile.png'),
+            title: Text(name[i]),
+          );
+        },
+      ),
+      bottomNavigationBar: const BottomAppBar(),
     );
-
   }
 }
 //stless 로 커스텀위젯을 만들 수 있다!
@@ -86,3 +78,39 @@ class BottomAppBar extends StatelessWidget {
   }
 }
 
+class DialogUI extends StatelessWidget {
+  final Function(String) onSubmitted;
+  final String hintText;
+
+  DialogUI({Key? key, required this.onSubmitted, this.hintText = "여기에 입력하세요"}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String inputText = '';
+
+    return AlertDialog(
+      title: Text('텍스트 입력'),
+      content: TextField(
+        onChanged: (value) {
+          inputText = value;
+        },
+        decoration: InputDecoration(hintText: hintText),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('취소'),
+          onPressed: () {
+            Navigator.pop(context); // 다이얼로그 닫기
+          },
+        ),
+        TextButton(
+          child: Text('완료'),
+          onPressed: () {
+            onSubmitted(inputText);
+            Navigator.of(context).pop(); // 다이얼로그 닫기
+          },
+        ),
+      ],
+    );
+  }
+}
